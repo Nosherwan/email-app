@@ -1,0 +1,6 @@
+.layout {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: space-around;
+	align-items: center;
+}

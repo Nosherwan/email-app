@@ -1,0 +1,22 @@
+{
+	"presets": [
+		[
+			"env",
+			{
+				"modules": false
+			}
+		],
+		"stage-2",
+		"stage-3",
+		"react"
+	],
+	"env": {
+		"development": {
+			"presets": []
+		}
+	},
+	"plugins": [
+		"react-hot-loader/babel",
+		"transform-runtime"
+	]
+}
