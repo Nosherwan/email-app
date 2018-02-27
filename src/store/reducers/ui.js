@@ -10,9 +10,15 @@ export default function ui(state = Map({
 
 	switch (action.type) {
 		case ActionTypes.ADD_EMAIL:
-			return state.update('emails', emails => emails.unshift(Map({ email: action.payLoad.email, type: action.payLoad.type })));
+			return state.withMutations(state => {
+				state.update('emails', emails => emails.unshift(Map({ email: action.payLoad.email, type: action.payLoad.type })));
+				state.set('message', '');
+			});
 		case ActionTypes.CLEAR_EMAILS:
-			return state.set('emails', List());
+			return state.withMutations(state => {
+				state.set('emails', List());
+				state.set('message', '');
+			});
 		case ActionTypes.SEND_EMAILS:
 			return state.set('message', '');
 		case ActionTypes.SEND_EMAILS_SUCCEEDED:

@@ -22,6 +22,8 @@
     "immutable": "^3.8.2",
     "keymirror": "^0.1.1",
     "lodash": "^4.17.5",
+    "material-ui": "^1.0.0-beta.35",
+    "material-ui-icons": "^1.0.0-beta.35",
     "moment": "^2.20.1",
     "numeral": "^2.0.6",
     "prop-types": "^15.6.0",

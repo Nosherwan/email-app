@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styles from './list.css';
+import Card, { CardContent } from 'material-ui/Card';
+import Typography from 'material-ui/Typography';
 
 class List extends PureComponent {
 
@@ -27,7 +29,22 @@ class List extends PureComponent {
 				<div>
 					<Link to='/main'>Main</Link>
 				</div>
-				{this.display()}
+				<Card className={styles.card}>
+					<CardContent>
+						<Typography variant="headline" component="h2">
+							About:
+						</Typography>
+						<Typography component="p">
+							* This App works along with the cabcharge-webapi app that is a separate repo on this github profile.
+						</Typography>
+						<Typography component="p">
+							*  Both apps need to be running locally on the same machine at the same time to work.
+						</Typography>
+						<Typography component="p">
+							* The webapi seemlessly swiches between two email provider services to push the email messages.
+						</Typography>
+					</CardContent>
+				</Card>
 			</div>
 		);
 	}

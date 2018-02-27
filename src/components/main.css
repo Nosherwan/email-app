@@ -8,7 +8,7 @@
 	padding: 0;
 }
 
-.layout>div {
+.layout > div, .layout > button {
 	margin: 2px 0px;
 }
 
@@ -24,6 +24,11 @@
 	padding: 0px;
 }
 
+
+.card {
+	height: 200;
+	width: 50%;
+}
 .group {
 	width: 60%;
 	display: flex;
@@ -48,7 +53,7 @@ input[type=text]:focus.emailGroup, textarea:focus.emailGroup {
 	border: 1px solid rgba(81, 203, 238, 1);
 }
 
-.button {
+/* .button {
 	border: 2px solid black;
 	padding: 2px;
 	width: 150px;
@@ -59,7 +64,7 @@ input[type=text]:focus.emailGroup, textarea:focus.emailGroup {
 
 .button:hover {
 	background-color: white;
-}
+} */
 
 .disabled_button {
 	border: 2px solid slategray;

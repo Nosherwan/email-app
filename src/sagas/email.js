@@ -25,7 +25,6 @@ export function* sendEmails(action) {
 				},
 				authorization: true
 			});
-			debugger
 		if (result && result.status === 200) {
 			yield put({
 				type: ActionTypes.SEND_EMAILS_SUCCEEDED,

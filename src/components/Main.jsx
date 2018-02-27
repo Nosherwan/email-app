@@ -3,14 +3,23 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styles from './main.css';
 import _ from 'lodash';
-import classnames from 'classnames';
-import { List } from 'immutable';
+import { List as _List } from 'immutable';
+import Button from 'material-ui/Button';
+import Input from 'material-ui/Input';
+import Select from 'material-ui/Select';
+import { MenuItem } from 'material-ui/Menu';
+import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import DraftsIcon from 'material-ui-icons/Drafts';
+import List from 'material-ui/List';
+import Snackbar from 'material-ui/Snackbar';
+import Card, { CardContent } from 'material-ui/Card';
+import Typography from 'material-ui/Typography';
 
 class Main extends PureComponent {
 
 	static defaultProps = {
 		message: '',
-		emails: List(),
+		emails: _List(),
 		handleAddEmail: null,
 		handleClearEmails: null,
 		handleSendEmails: null
@@ -29,16 +38,32 @@ class Main extends PureComponent {
 		this.handleChange = _.debounce(this._handleChange, 200);
 		this.state = {
 			typedEmail: '',
-			emailValid: false
+			emailValid: false,
+			type: 'to',
+			typedText: '',
 		};
 	}
 
 	typeHandler = e => {
 		const { target: { value } } = e;
-		this.setState({
+		this.setState(() => ({
 			typedEmail: value
-		});
+		}));
 		this.handleChange(value);
+	}
+
+	handleTypedTextChange = e => {
+		const { target: { value } } = e;
+		this.setState(() => ({
+			typedText: value
+		}));
+	}
+
+	handleTypeChange = e => {
+		const { target: { value } } = e;
+		this.setState(() => ({
+			type: value
+		}));
 	}
 
 	_handleChange = text => {
@@ -48,8 +73,12 @@ class Main extends PureComponent {
 	}
 
 	addEmail = () => {
-		if (this.state.emailValid)
-			this.props.handleAddEmail(this.state.typedEmail, this.selectList.value);
+		if (this.state.emailValid && this.state.typedEmail)
+			this.props.handleAddEmail(this.state.typedEmail, this.state.type);
+		this.setState(() => ({
+			typedEmail: '',
+			emailValid: false
+		}));
 	}
 
 	clearEmailList = () => this.props.handleClearEmails();
@@ -58,13 +87,20 @@ class Main extends PureComponent {
 		const { emails } = this.props;
 		const list = [];
 		if (emails.size > 0) {
-			emails.map((item, i) => {
-				list.push(<li key={i}>{item.get('type') + ': ' + item.get('email')}</li>);
-			});
+			emails.map((item, i) =>
+				list.push(
+					<ListItem button key={i}>
+						<ListItemIcon key={i}>
+							<DraftsIcon key={i} />
+						</ListItemIcon>
+						<ListItemText primary={item.get('type') + ': ' + item.get('email')} />
+					</ListItem>
+				)
+			);
 			return (
-				<ul>
+				<List component="nav">
 					{list}
-				</ul>
+				</List>
 			);
 		} else {
 			return null;
@@ -77,63 +113,93 @@ class Main extends PureComponent {
 	}
 
 	submitForm = () => {
-		this.props.handleSendEmails(this.textarea.value);
+		this.props.handleSendEmails(this.state.typedText);
 	}
 
 	render() {
-		const { typeHandler, addEmail, clearEmailList, submitForm, state } = this;
+		const {
+			handleTypedTextChange,
+			typeHandler,
+			addEmail,
+			clearEmailList,
+			state } = this;
 		return (
 			<div
 				className={styles.layout}>
 				<div>
 					<Link to='/list'>About</Link>
 				</div>
-				<p>
-					{'Please provide one or more email addresses to send email to:'}
-				</p>
-				<p>{this.props.message}</p>
+				<Card className={styles.card}>
+					<CardContent>
+						<Typography variant="headline" component="h2">
+							Send Text Emails
+						</Typography>
+						<Typography component="p">
+							This App allows you to send a text email message to multiple recepients:
+						</Typography>
+						<Typography component="p">
+							1. Please select a type from the dropdown below, and type an email address to add it to the list. Add as many as you like, but make sure there is at least one to: address added.
+						</Typography>
+						<Typography component="p">
+							2. Then type the text in the multiline input that should be sent with the test message, and press the send Emails button.
+						</Typography>
+					</CardContent>
+				</Card>
 				<div className={styles.group}>
-					<select
-						ref={ref => this.selectList = ref}
-						name="text"
-						className={classnames(styles.emailGroup)}>
-						<option value="to">To</option>
-						<option value="cc">CC</option>
-						<option value="bcc">BCC</option>
-					</select>
-					<input
-						className={classnames(styles.emailInput, styles.emailGroup)}
-						type="text"
-						name={'email-input'}
+					<Select
+						value={this.state.type}
+						onChange={this.handleTypeChange}
+						autoWidth={true}
+					>
+						<MenuItem value={'to'}>To</MenuItem>
+						<MenuItem value={'cc'}>CC</MenuItem>
+						<MenuItem value={'bcc'}>BCC</MenuItem>
+					</Select>
+					<Input
+						fullWidth={true}
+						error={!state.emailValid}
 						placeholder={'Please type in email address'}
 						onChange={typeHandler}
-						defaultValue={state.typedEmail} />
+						value={state.typedEmail}
+					/>
 				</div>
-				{this.renderEmailList()}
-				<div
+				<Button
 					onClick={addEmail}
-					className={classnames({
-						[styles.button]: state.emailValid,
-						[styles.disabled_button]: !state.emailValid
-					})}
-				>Add Email</div>
-				<div
+					disabled={!state.emailValid}
+					variant="raised" color="primary">
+					Add Email
+				</Button>
+				{this.renderEmailList()}
+				<Button
 					onClick={clearEmailList}
-					className={styles.button}
-				>Clear Email List</div>
-				<textarea
-					ref={ref => this.textarea = ref}
-					className={classnames(styles.emailGroup, styles.emailTextArea)}
-					name={'text-input'}
-					placeholder={'Please type in message.'}
+					variant="raised" color="primary">
+					Clear Email List
+				</Button>
+				<Input
+					multiline={true}
+					className={styles.emailTextArea}
+					placeholder={'Please type in message to be sent...'}
+					onChange={handleTypedTextChange}
+					value={state.typedText}
 				/>
 				<span className={styles.button}>
-					<button
-						className={styles.submit_button}
-						type='button'
+					<Button
+						variant="raised" color="primary"
 						onClick={this.submitForm}
-					>Send Emails</button>
+					>Send Emails</Button>
 				</span>
+				<Snackbar
+					anchorOrigin={{
+						vertical: 'bottom',
+						horizontal: 'center',
+					}}
+					open={this.props.message}
+					autoHideDuration={6000}
+					SnackbarContentProps={{
+						'aria-describedby': 'message-id',
+					}}
+					message={<span id="message-id">{this.props.message}</span>}
+				/>
 			</div>
 		);
 	}
